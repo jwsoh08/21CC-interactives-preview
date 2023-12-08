@@ -30,7 +30,7 @@ import Game from './game.js';
 
         // start the game and show the progress bar
         const game = new Game();
-        var progressBar = document.querySelector(".progressBarContainer");
+        var progressBar = document.querySelector(".progress-wrapper");
         progressBar.classList.remove('not-displayed');
     })
 

@@ -1,4 +1,5 @@
 import ProgressBar from './progressbar.js'
+import Timer from './timer.js'
 
 const {
     Body,
@@ -27,6 +28,7 @@ class Game {
         this.riceGrainsSaved = 0; // units: grams
         this.timerSeconds = 40;
         this.timerInterval;
+        this.updateHtmlElementTimer(this.timerSeconds);
         this.leakingRicesacksDisplay = [];
         this.gameSound = new Audio('./audio/wwii-background-music.mp3');
         this.gameSound.play();
@@ -93,10 +95,16 @@ class Game {
     startTimer() {
         this.timerInterval = setInterval(() => {
             this.timerSeconds--;
+            this.updateHtmlElementTimer(this.timerSeconds);
             if (this.riceGrainsSaved === 400 || this.timerSeconds <= 0) {
                 this.stopGame();
             }
         }, 1000);
+    }
+
+    updateHtmlElementTimer(timerSeconds) {
+        const seconds = timerSeconds < 10 ? timerSeconds.toString().padStart(2, '0') : timerSeconds;
+        Timer.updateTimer(`00:${seconds}`);
     }
 
     startFallingRice() {
@@ -278,26 +286,26 @@ class Game {
     }
 
     createUserInteractionHandlers() {
-        const leftButton = document.getElementById('leftButton');
-        const rightButton = document.getElementById('rightButton');
+        // const leftButton = document.getElementById('leftButton');
+        // const rightButton = document.getElementById('rightButton');
 
-        leftButton.addEventListener('click', () => {
-            if (this.basket.position.x >= 750) return;
-            Body.setPosition(this.basket, { x: this.basket.position.x - 50, y: this.basket.position.y });
-        });
-        rightButton.addEventListener('click', () => {
-            if (this.basket.position.x <= 50) return;
-            Body.setPosition(this.basket, { x: this.basket.position.x + 50, y: this.basket.position.y });
-        });
+        // leftButton.addEventListener('click', () => {
+        //     if (this.basket.position.x >= 750) return;
+        //     Body.setPosition(this.basket, { x: this.basket.position.x - 50, y: this.basket.position.y });
+        // });
+        // rightButton.addEventListener('click', () => {
+        //     if (this.basket.position.x <= 50) return;
+        //     Body.setPosition(this.basket, { x: this.basket.position.x + 50, y: this.basket.position.y });
+        // });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowLeft') {
-                Body.setPosition(this.basket, { x: this.basket.position.x - 15, y: this.basket.position.y });
-            }
-            else if (event.key === 'ArrowRight') {
-                Body.setPosition(this.basket, { x: this.basket.position.x + 15, y: this.basket.position.y });
-            }
-        });
+        // document.addEventListener('keydown', (event) => {
+        //     if (event.key === 'ArrowLeft') {
+        //         Body.setPosition(this.basket, { x: this.basket.position.x - 15, y: this.basket.position.y });
+        //     }
+        //     else if (event.key === 'ArrowRight') {
+        //         Body.setPosition(this.basket, { x: this.basket.position.x + 15, y: this.basket.position.y });
+        //     }
+        // });
     }
 
     async disposeRiceGrains(grains) {
