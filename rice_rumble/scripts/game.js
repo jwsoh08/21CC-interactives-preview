@@ -78,6 +78,7 @@ class Game {
         clearInterval(this.timerInterval);
         clearInterval(this.fallingRiceIntervalA);
         clearInterval(this.fallingRiceIntervalB);
+        clearInterval(this.fallingRiceIntervalC);
         // this.gameSound.pause();
         this.hideGameContainer();
         this.showResults();
