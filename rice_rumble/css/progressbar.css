@@ -1,0 +1,124 @@
+.progressBarContainer {
+
+
+    position: fixed;
+    width: 85vw;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 4.5vh;
+    min-height: 25px;
+}
+
+#progressBar {
+    background: white;
+    display: flex;
+    position: relative;
+    height: 100%;
+    border: 3px solid #F7CFE5;
+    border-radius: max(15px, 3vw);
+    box-shadow: 4px 4px 1px #F47D61;
+}
+
+#progressLevel {
+    height: 100%;
+    border-radius: 3vw 0 0 3vw;
+    transition: all 0.1s linear 0s;
+    margin-bottom: 40px;
+    background: #578FFE;
+    position: absolute;
+}
+
+.fullbar {
+    border-radius: 1.3125rem !important;
+}
+
+#percentage {
+    height: 100%;
+    margin-left: 0%;
+    transition: all 0.1s linear 0s;
+    position: absolute;
+    z-index: 1;
+    left: -5px;
+}
+
+#percentage>svg {
+    height: 100%;
+    width: 100%;
+}
+
+.star {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    top: 0px;
+    left: 4px;
+    overflow: hidden;
+}
+
+.star::before {
+    position: absolute;
+    font-family: 'Dosis', sans-serif;
+    color: #FF0082;
+    top: 13px;
+    left: 11px;
+    letter-spacing: .2rem;
+}
+
+
+.star-1::before {
+    left: 12px;
+    content: '1X';
+}
+
+.star-2::before {
+    content: '2X';
+}
+
+.star-3::before {
+    content: '3X';
+}
+
+.star-4::before {
+    content: '4X';
+}
+
+.star-jump {
+    animation: 1.4s linear star-jump;
+}
+
+@keyframes star-jump {
+    0% {
+        top: 0px;
+        opacity: 0;
+        height: 56px;
+    }
+
+    35% {
+        height: 56px;
+    }
+
+    60% {
+        /* star will jump to the highest point */
+        top: -53px;
+        opacity: 1;
+        height: 40px;
+        transform: rotateY(0deg);
+    }
+
+    90% {
+        /* star will rotate 540deg */
+        top: -53px;
+        opacity: 1;
+        height: 40px;
+        transform: rotateY(540deg);
+    }
+
+    100% {
+        /* star will fade away */
+        top: -53px;
+        opacity: 0;
+        height: 40px;
+        transform: rotateY(540deg);
+    }
+}
