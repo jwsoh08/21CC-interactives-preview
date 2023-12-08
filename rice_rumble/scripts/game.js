@@ -41,6 +41,7 @@ class Game {
 
         this.fallingRiceIntervalA;
         this.fallingRiceIntervalB;
+        this.fallingRiceIntervalC;
         this.intervalTimeInMilliseconds = 2000;
 
         this.startFallingRice();
@@ -107,24 +108,34 @@ class Game {
             World.add(this.engine.world, riceGrains);
         }
 
-        const temp = () => {
+        const temp = async () => {
             dropRiceGrainsAtRandomPosition(this.leakingRicesackA);
 
-            // updates to the spawn rate and number of leaking rice sacks when timer is less than 20s
-            if (this.timerSeconds <= 20 && this.leakingRicesackB.render.opacity === 0) {
-                this.engine.world.gravity.y = 2.5;
+            if (this.timerSeconds <= 25 && this.leakingRicesackB.render.opacity === 0) {
+                /*
+                 * In case we wish to increase the speed of the falling rice grains, we can use this setting here
+                 * Example:
+                 * this.engine.world.gravity.y = 2.5;
+                 */
 
-                // change spawn timer for sack A from 2s to 1s 
-                clearInterval(this.fallingRiceIntervalA);
-                this.fallingRiceIntervalA = setInterval(temp, 1000);
+                /* 
+                 * In case we want to change the interval time of the leaking rice sack's initial position
+                 * and it's next position over the span of this.timerSeconds. (see definition above to find out how long it has been set)
+                 * clearInterval(this.fallingRiceIntervalA);
+                 * Example:
+                 * this.fallingRiceIntervalA = setInterval(temp, 1000);
+                 */
 
                 // start spawn timer for sack B from 2s
+                await this.waitOneSecond();
                 this.unhideRicesack(this.leakingRicesackB);
                 this.fallingRiceIntervalB = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackB), 2000);
             }
 
-            if (this.timerSeconds <= 5) {
-                this.engine.world.gravity.y = 5;
+            if (this.timerSeconds <= 15 && this.leakingRicesackC.render.opacity === 0) {
+                this.engine.world.gravity.y = 2.5;
+                this.unhideRicesack(this.leakingRicesackC);
+                this.fallingRiceIntervalC = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackC), 2000);
             }
         };
 
@@ -171,25 +182,9 @@ class Game {
             }
         });
 
-        this.leakingRicesackA = Bodies.rectangle(this.getRandomXPosition(50, 750), 110, 75, 75, {
-            isStatic: true,
-            render: {
-                sprite: {
-                    texture: './images/leaking-rice-sack-A.svg'
-                },
-                opacity: 0
-            }
-        });
-
-        this.leakingRicesackB = Bodies.rectangle(this.getRandomXPosition(50, 750), 110, 75, 75, {
-            isStatic: true,
-            render: {
-                sprite: {
-                    texture: './images/leaking-rice-sack-B.svg'
-                },
-                opacity: 0
-            }
-        });
+        this.leakingRicesackA = this.createLeakingRicesack('type-1');
+        this.leakingRicesackB = this.createLeakingRicesack('type-2');
+        this.leakingRicesackC = this.createLeakingRicesack('type-1');
 
         const staticBodyOptions = {
             isStatic: true,
@@ -218,6 +213,7 @@ class Game {
             this.shelf,
             this.leakingRicesackA,
             this.leakingRicesackB,
+            this.leakingRicesackC,
             this.basketLowerConstraint,
             this.lowerGround,
             this.leftWall,
@@ -362,6 +358,18 @@ class Game {
                 // removing this attribute allows the rice grains to fall through one another
                 // group: 2, 
                 mask: 0x0002
+            }
+        });
+    }
+
+    createLeakingRicesack(type) {
+        return Bodies.rectangle(this.getRandomXPosition(50, 750), 110, 75, 75, {
+            isStatic: true,
+            render: {
+                sprite: {
+                    texture: `./images/leaking-rice-sack-${type}.svg`
+                },
+                opacity: 0
             }
         });
     }
