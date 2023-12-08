@@ -24,7 +24,7 @@ class Game {
                 background: 'transparent'
             },
         });
-        this.riceGrainsCaught = 0;
+        this.riceGrainsSaved = 0; // units: grams
         this.timerSeconds = 40;
         this.timerInterval;
         this.leakingRicesacksDisplay = [];
@@ -71,10 +71,10 @@ class Game {
     }
 
     showResults() {
-        if (this.riceGrainsCaught <= 10) {
+        if (this.riceGrainsSaved <= 200) {
             document.querySelector('.ending > .results.encourage').classList.remove('not-displayed');
         } else {
-            document.querySelector('.ending > .results.congratulate img').src = `./images/collected-${this.riceGrainsCaught}-grains.svg`;
+            document.querySelector('.ending > .results.congratulate img').src = `./images/congratulatory-message.svg`;
             document.querySelector('.ending > .results.congratulate').classList.remove('not-displayed');
         }
     }
@@ -82,7 +82,7 @@ class Game {
     startTimer() {
         this.timerInterval = setInterval(() => {
             this.timerSeconds--;
-            if (this.riceGrainsCaught === 30 || this.timerSeconds <= 0) {
+            if (this.riceGrainsSaved === 400 || this.timerSeconds <= 0) {
                 this.stopGame();
             }
         }, 1000);
@@ -246,15 +246,18 @@ class Game {
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'basket') {
                     const riceGrains = collision.bodyA;
                     World.remove(this.engine.world, riceGrains);
-                    this.progressBar.updateProgressBar(++this.riceGrainsCaught * (100 / 30));
+                    this.riceGrainsSaved += 10;
+                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 400) * 100);
                     return;
                 }
                 if (collision.bodyB.label === 'rice grains' && collision.bodyA.label === 'basket') {
                     const riceGrains = collision.bodyB;
                     World.remove(this.engine.world, riceGrains);
-                    this.progressBar.updateProgressBar(++this.riceGrainsCaught * (100 / 30));
+                    this.riceGrainsSaved += 10;
+                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 400) * 100);
                     return;
                 }
+
 
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'lower ground') {
                     const riceGrains = collision.bodyA;
