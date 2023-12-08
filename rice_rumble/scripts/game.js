@@ -53,6 +53,16 @@ class Game {
         return Number((Math.random() * (maxX - minX) + minX).toFixed(0));
     }
 
+    getRandomElement(arr) {
+        if (arr.length === 0) {
+            // Handle empty array case
+            return undefined;
+        }
+
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        return arr[randomIndex];
+    }
+
     waitOneSecond() {
         return new Promise(resolve => setTimeout(() => resolve(), 1000));
     }
@@ -335,8 +345,11 @@ class Game {
     createLeakingRiceGrains(sack) {
         const xPos = sack.position.x;
         const yPos = sack.position.y + 20;
+        // the rice grains should be rotated by one of the 3 possible angles upon "spawning"
+        const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
 
         return Bodies.rectangle(xPos, yPos, 15, 15, {
+            angle: this.getRandomElement(possibleAnglesInRadians),
             render: {
                 sprite: {
                     texture: './images/rice-grains.svg'
