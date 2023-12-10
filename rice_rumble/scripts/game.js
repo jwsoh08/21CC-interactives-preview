@@ -174,11 +174,25 @@ class Game {
             friction: 0.1,
             density: 0.01,
             collisionFilter: {
+                // group attribute set to -1 as we do not want collisions between the invisible
+                // dragger and the basket (i.e. we want them to be able to overlap)
                 group: 1,
                 category: 0x0002
             },
             sleepThreshold: 15,    // Customize the sleep threshold
             sleepTimeLimit: 1000,  // Customize the sleep time limit (in milliseconds)
+        });
+
+        // this dragger is created for moving the basket horizontally only
+        this.dragger = Bodies.rectangle(400, 420, 80, 80, {
+            label: "dragger",
+            render: {
+                opacity: 0,
+            },
+            collisionFilter: {
+                group: 3,
+                mask: 0x0004
+            }
         });
 
         this.shelf = Bodies.rectangle(400, 100, 810, 15, {
@@ -219,6 +233,7 @@ class Game {
 
         World.add(this.engine.world, [
             this.basket,
+            this.dragger,
             this.shelf,
             this.leakingRicesackA,
             this.leakingRicesackB,
@@ -249,7 +264,7 @@ class Game {
                 mask: 0x0002
             }
         });
-        World.add(this.engine.world, this.mouseConstraint);
+        // World.add(this.engine.world, this.mouseConstraint);
     }
 
     createEventListeners() {
@@ -273,7 +288,6 @@ class Game {
                     return;
                 }
 
-
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'lower ground') {
                     const riceGrains = collision.bodyA;
                     this.disposeRiceGrains(riceGrains);
@@ -287,26 +301,57 @@ class Game {
     }
 
     createUserInteractionHandlers() {
-        // const leftButton = document.getElementById('leftButton');
-        // const rightButton = document.getElementById('rightButton');
+        const gameElement = document.querySelector('.game');
 
-        // leftButton.addEventListener('click', () => {
-        //     if (this.basket.position.x >= 750) return;
-        //     Body.setPosition(this.basket, { x: this.basket.position.x - 50, y: this.basket.position.y });
-        // });
-        // rightButton.addEventListener('click', () => {
-        //     if (this.basket.position.x <= 50) return;
-        //     Body.setPosition(this.basket, { x: this.basket.position.x + 50, y: this.basket.position.y });
-        // });
+        let isPointerPressed = false;
+        let pointerX = 0;
+        let pointerY = 0;
 
-        // document.addEventListener('keydown', (event) => {
-        //     if (event.key === 'ArrowLeft') {
-        //         Body.setPosition(this.basket, { x: this.basket.position.x - 15, y: this.basket.position.y });
-        //     }
-        //     else if (event.key === 'ArrowRight') {
-        //         Body.setPosition(this.basket, { x: this.basket.position.x + 15, y: this.basket.position.y });
-        //     }
-        // });
+        const basket = this.basket;
+
+        function updateState(event) {
+            const currentViewportSize = window.innerWidth;
+            // the width of the canvas and the viewport width is different
+            // hence, we need a scaling factor to convert from viewport x-position
+            // to the exact x-position on the canvas.
+            const scalingFactor = 800 / currentViewportSize;
+
+            // Check if it's a touch event
+            if (event.touches && event.touches.length > 0) {
+                pointerX = event.touches[0].clientX;
+                pointerY = event.touches[0].clientY;
+            } else {
+                // It's a mouse event
+                pointerX = event.clientX;
+                pointerY = event.clientY;
+            }
+
+            const convertedXPos = pointerX * scalingFactor;
+            Body.setPosition(basket, { x: convertedXPos, y: basket.position.y });
+        }
+
+        gameElement.addEventListener('mousedown', function (event) {
+            isPointerPressed = true;
+            updateState(event);
+            document.addEventListener('mousemove', updateState);
+        });
+        document.addEventListener('mouseup', function (event) {
+            if (isPointerPressed) {
+                isPointerPressed = false;
+                document.removeEventListener('mousemove', updateState);
+            }
+        });
+        gameElement.addEventListener('touchstart', function (event) {
+            isPointerPressed = true;
+            document.addEventListener('touchmove', updateState);
+        });
+        document.addEventListener('touchend', function (event) {
+            if (isPointerPressed) {
+                isPointerPressed = false;
+                document.removeEventListener('touchmove', updateState);
+            }
+        });
+
     }
 
     async disposeRiceGrains(grains) {
@@ -365,7 +410,9 @@ class Game {
             friction: 0.1,
             collisionFilter: {
                 // removing this attribute allows the rice grains to fall through one another
-                // group: 2, 
+                // group attribute set to -1 as we do not want collisions between the invisible
+                // dragger and the rice grains
+                group: 2,
                 mask: 0x0002
             }
         });
