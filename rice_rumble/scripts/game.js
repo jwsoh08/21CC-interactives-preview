@@ -326,6 +326,9 @@ class Game {
                 pointerY = event.clientY;
             }
 
+            const boundaryPadding = 100;
+            if (pointerX <= boundaryPadding || pointerX >= currentViewportSize - boundaryPadding) return;
+
             const convertedXPos = pointerX * scalingFactor;
             Body.setPosition(basket, { x: convertedXPos, y: basket.position.y });
         }
