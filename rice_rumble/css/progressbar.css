@@ -14,11 +14,11 @@
     flex: 1;
     height: 4.5vh;
     min-height: 25px;
+    border-radius: max(15px, 3vw);
 }
 
 #progressBar {
     background: white;
-    display: flex;
     position: relative;
     height: 100%;
     border: 3px solid #F7CFE5;
@@ -32,7 +32,25 @@
     transition: all 0.1s linear 0s;
     margin-bottom: 40px;
     background: #578FFE;
+    position: relative;
+}
+
+#progressLevel>svg {
+    min-width: 32px;
+    width: auto;
+    height: 115%;
     position: absolute;
+    right: -22px;
+    top: -9%;
+}
+
+@media (min-width: 34.375rem) {
+
+    /* Tablets */
+    #progressLevel>svg {
+        min-width: 45px;
+        right: -32px;
+    }
 }
 
 .fullbar {
