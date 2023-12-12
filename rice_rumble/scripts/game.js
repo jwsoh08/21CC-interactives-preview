@@ -326,7 +326,7 @@ class Game {
                 pointerY = event.clientY;
             }
 
-            const boundaryPadding = 100;
+            const boundaryPadding = 0.05 * currentViewportSize;
             if (pointerX <= boundaryPadding || pointerX >= currentViewportSize - boundaryPadding) return;
 
             const convertedXPos = pointerX * scalingFactor;
