@@ -109,6 +109,16 @@
             display: flex;
         }
 
+        .overlay {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background-color: hsl(0deg 0% 0% / 45%);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
 
         .game,
         #game-canvas {
@@ -191,6 +201,7 @@
         <div class="game not-displayed">
             <canvas id="game-canvas"></canvas>
         </div>
+        <div class="overlay not-displayed"></div>
         <div class="ending">
             <section class="results congratulate info-box not-displayed">
                 <!-- src left empty on purpose, to be dynamically populated later -->
