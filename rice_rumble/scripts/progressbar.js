@@ -3,6 +3,10 @@ class ProgressBar {
         this.updateProgressBar(0);
     }
 
+    reset() {
+        this.updateProgressBar(0);
+    }
+
     updateProgressBar(level, score = 0) {
         var progressLevel = document.getElementById("progressLevel");
         // to offset the icon marker on the progress bar a little bit to the right

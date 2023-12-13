@@ -1,6 +1,7 @@
 class Modal {
     constructor() {
         this.notEnoughRice = document.querySelector('.results.encourage');
+        this.overlay = null; // to be added
     }
 
     showNotEnoughRice() {
@@ -10,7 +11,8 @@ class Modal {
     executeFuncAfterHidingNotEnoughRice(func) {
         this.notEnoughRice.addEventListener('click', () => {
             func();
-        })
+            this.notEnoughRice.classList.add('not-displayed');
+        });
     }
 }
 

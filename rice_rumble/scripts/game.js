@@ -31,7 +31,7 @@ class Game {
         this.riceGrainsSaved = 0; // units: grams
 
         this.currentLevel = 1;
-        this.currentLevelTimer = 5; // unit: seconds
+        this.currentLevelTimer = 30; // unit: seconds
         this.timerInterval;
         this.updateHtmlElementTimer(this.currentLevelTimer);
 
@@ -58,8 +58,7 @@ class Game {
         this.fallingRiceIntervalC;
         this.intervalTimeInMilliseconds = 2000;
 
-        this.startFallingRice();
-        this.startTimer();
+        this.startLevel(1);
         this.gameLoop();
     }
 
@@ -86,29 +85,46 @@ class Game {
         this.gameContainer.classList.add('not-displayed');
     }
 
-    stopGame() {
-        clearInterval(this.timerInterval);
-        clearInterval(this.fallingRiceIntervalA);
-        clearInterval(this.fallingRiceIntervalB);
-        clearInterval(this.fallingRiceIntervalC);
-        // this.gameSound.pause();
-        this.hideGameContainer();
-        this.showResults();
-    }
-
     pauseGame() {
         this.isPaused = true;
         clearInterval(this.timerInterval);
+        this.stopAllFallingRicesacksItems();
+    }
+
+    stopAllFallingRicesacksItems() {
         clearInterval(this.fallingRiceIntervalA);
         clearInterval(this.fallingRiceIntervalB);
         clearInterval(this.fallingRiceIntervalC);
     }
 
+    dropRiceGrainsAtRandomPositions(riceSack, intervalInSeconds) {
+        this.fallingRiceIntervalA = setInterval(() => {
+            this.repositionLeakingRicesack(riceSack);
+            this.unhideRicesack(riceSack);
+
+            const riceGrains = this.createLeakingRiceGrains(riceSack);
+            World.add(this.engine.world, riceGrains);
+        }, intervalInSeconds * 1000);
+    }
+
+    levelReset() {
+        this.resetTimer(30);
+        this.riceGrainsSaved = 0;
+        this.isPaused = false;
+        this.stopAllFallingRicesacksItems();
+        // TODO: remove all remaining rice grains on screen from current level
+        this.progressBar.reset();
+    }
+
     startLevel(level) {
-        // set gravity level
-        // set bodies to be used in level
-        console.log(this);
-        console.log(level);
+        this.levelReset();
+        this.startTimer();
+
+        // place the game logic required for each level if each if block
+        if (level === 1) {
+            this.engine.world.gravity.y = 1;
+            this.dropRiceGrainsAtRandomPositions(this.leakingRicesackA, 2);
+        }
     }
 
     showResults() {
@@ -120,13 +136,16 @@ class Game {
         }
     }
 
+    resetTimer(seconds) {
+        clearInterval(this.timerInterval);
+        this.currentLevelTimer = seconds;
+        this.updateHtmlElementTimer(this.currentLevelTimer);
+    }
+
     startTimer() {
         this.timerInterval = setInterval(() => {
             this.currentLevelTimer--;
             this.updateHtmlElementTimer(this.currentLevelTimer);
-            // if (this.riceGrainsSaved === 400 || this.currentLevelTimer <= 0) {
-            //     this.stopGame();
-            // }
         }, 1000);
     }
 
@@ -136,7 +155,7 @@ class Game {
     }
 
     startFallingRice() {
-        const dropRiceGrainsAtRandomPosition = (riceSack) => {
+        const dropRiceGrainsAtRandomPositions = (riceSack) => {
             this.repositionLeakingRicesack(riceSack);
             this.unhideRicesack(riceSack);
 
@@ -145,7 +164,7 @@ class Game {
         }
 
         const temp = async () => {
-            dropRiceGrainsAtRandomPosition(this.leakingRicesackA);
+            dropRiceGrainsAtRandomPositions(this.leakingRicesackA);
 
             if (this.currentLevelTimer <= 25 && this.leakingRicesackB.render.opacity === 0) {
                 /*
@@ -165,13 +184,13 @@ class Game {
                 // start spawn timer for sack B from 2s
                 await this.waitOneSecond();
                 this.unhideRicesack(this.leakingRicesackB);
-                this.fallingRiceIntervalB = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackB), 2000);
+                this.fallingRiceIntervalB = setInterval(() => dropRiceGrainsAtRandomPositions(this.leakingRicesackB), 2000);
             }
 
             if (this.currentLevelTimer <= 15 && this.leakingRicesackC.render.opacity === 0) {
                 this.engine.world.gravity.y = 2.5;
                 this.unhideRicesack(this.leakingRicesackC);
-                this.fallingRiceIntervalC = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackC), 2000);
+                this.fallingRiceIntervalC = setInterval(() => dropRiceGrainsAtRandomPositions(this.leakingRicesackC), 2000);
             }
         };
 
