@@ -4,10 +4,10 @@ import Modal from './modal.js'
 
 const {
     Body,
+    Composite,
     Events,
     Engine,
     Render,
-    Runner,
     World,
     Bodies,
     Mouse,
@@ -107,12 +107,22 @@ class Game {
         }, intervalInSeconds * 1000);
     }
 
+    removeAllRiceGrainsFromScreen() {
+        const bodies = Composite.allBodies(this.engine.world);
+        bodies.forEach((body) => {
+            if (body.label === "rice grains") {
+                World.remove(this.engine.world, body);
+            }
+        })
+        return;
+    }
+
     levelReset() {
         this.resetTimer(30);
         this.riceGrainsSaved = 0;
         this.isPaused = false;
         this.stopAllFallingRicesacksItems();
-        // TODO: remove all remaining rice grains on screen from current level
+        this.removeAllRiceGrainsFromScreen();
         this.progressBar.reset();
     }
 
