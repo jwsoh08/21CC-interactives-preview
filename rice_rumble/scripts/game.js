@@ -1,5 +1,6 @@
 import ProgressBar from './progressbar.js'
 import Timer from './timer.js'
+import Modal from './modal.js'
 
 const {
     Body,
@@ -12,6 +13,8 @@ const {
     Mouse,
     MouseConstraint
 } = Matter;
+
+const modal = new Modal();
 
 class Game {
     constructor() {
@@ -26,9 +29,18 @@ class Game {
             },
         });
         this.riceGrainsSaved = 0; // units: grams
-        this.timerSeconds = 40;
+
+        this.currentLevel = 1;
+        this.currentLevelTimer = 5; // unit: seconds
         this.timerInterval;
-        this.updateHtmlElementTimer(this.timerSeconds);
+        this.updateHtmlElementTimer(this.currentLevelTimer);
+
+        this.isPaused = false;
+        // to keep 'this' under original Game instance when method is used 
+        // within a Modal instance.
+        this.startLevel.bind(this);
+        this.isMouseCaught = false;
+
         this.leakingRicesacksDisplay = [];
         this.gameSound = new Audio('./audio/wwii-background-music.mp3');
         this.gameSound.play();
@@ -84,6 +96,21 @@ class Game {
         this.showResults();
     }
 
+    pauseGame() {
+        this.isPaused = true;
+        clearInterval(this.timerInterval);
+        clearInterval(this.fallingRiceIntervalA);
+        clearInterval(this.fallingRiceIntervalB);
+        clearInterval(this.fallingRiceIntervalC);
+    }
+
+    startLevel(level) {
+        // set gravity level
+        // set bodies to be used in level
+        console.log(this);
+        console.log(level);
+    }
+
     showResults() {
         if (this.riceGrainsSaved <= 200) {
             document.querySelector('.ending > .results.encourage').classList.remove('not-displayed');
@@ -95,11 +122,11 @@ class Game {
 
     startTimer() {
         this.timerInterval = setInterval(() => {
-            this.timerSeconds--;
-            this.updateHtmlElementTimer(this.timerSeconds);
-            if (this.riceGrainsSaved === 400 || this.timerSeconds <= 0) {
-                this.stopGame();
-            }
+            this.currentLevelTimer--;
+            this.updateHtmlElementTimer(this.currentLevelTimer);
+            // if (this.riceGrainsSaved === 400 || this.currentLevelTimer <= 0) {
+            //     this.stopGame();
+            // }
         }, 1000);
     }
 
@@ -120,7 +147,7 @@ class Game {
         const temp = async () => {
             dropRiceGrainsAtRandomPosition(this.leakingRicesackA);
 
-            if (this.timerSeconds <= 25 && this.leakingRicesackB.render.opacity === 0) {
+            if (this.currentLevelTimer <= 25 && this.leakingRicesackB.render.opacity === 0) {
                 /*
                  * In case we wish to increase the speed of the falling rice grains, we can use this setting here
                  * Example:
@@ -129,7 +156,7 @@ class Game {
 
                 /* 
                  * In case we want to change the interval time of the leaking rice sack's initial position
-                 * and it's next position over the span of this.timerSeconds. (see definition above to find out how long it has been set)
+                 * and it's next position over the span of this.currentLevelTimer. (see definition above to find out how long it has been set)
                  * clearInterval(this.fallingRiceIntervalA);
                  * Example:
                  * this.fallingRiceIntervalA = setInterval(temp, 1000);
@@ -141,7 +168,7 @@ class Game {
                 this.fallingRiceIntervalB = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackB), 2000);
             }
 
-            if (this.timerSeconds <= 15 && this.leakingRicesackC.render.opacity === 0) {
+            if (this.currentLevelTimer <= 15 && this.leakingRicesackC.render.opacity === 0) {
                 this.engine.world.gravity.y = 2.5;
                 this.unhideRicesack(this.leakingRicesackC);
                 this.fallingRiceIntervalC = setInterval(() => dropRiceGrainsAtRandomPosition(this.leakingRicesackC), 2000);
@@ -433,10 +460,34 @@ class Game {
         });
     }
 
+    updateGame() {
+        if (this.isPaused) return;
+
+        if ((this.currentLevelTimer === 0) &&
+            (this.riceGrainsSaved < 200)) {
+            this.pauseGame();
+            modal.showNotEnoughRice();
+            modal.executeFuncAfterHidingNotEnoughRice(() => this.startLevel(this.currentLevel));
+        }
+
+        if (this.isMouseCaught) {
+            // show modal for not mouse caught
+            // on click of modal, restart round
+        }
+
+        if (this.riceGrainsSaved === 200) {
+            // show modal for enough rice caught
+            // on click of modal, start new level 
+        }
+
+
+    }
+
     gameLoop() {
         // Update the Matter.js engine
         Engine.update(this.engine);
 
+        this.updateGame();
         // Repeat the game loop
         requestAnimationFrame(() => this.gameLoop());
     }

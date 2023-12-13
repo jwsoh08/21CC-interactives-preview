@@ -44,7 +44,7 @@ import Game from './game.js';
         endingMessageContainer.classList.remove('not-displayed');
     }
 
-    encourageMessageContainer.addEventListener('click', openEndingMessage);
+    // encourageMessageContainer.addEventListener('click', openEndingMessage);
     congratulateMessageContainer.addEventListener('click', openEndingMessage);
 
     endingMessageContainer.addEventListener('click', () => {
