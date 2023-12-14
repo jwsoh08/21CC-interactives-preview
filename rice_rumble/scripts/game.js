@@ -132,8 +132,8 @@ class Game {
 
         // place the game logic required for each level if each if block
         if (level === 1) {
-            this.engine.world.gravity.y = 1;
-            this.dropRiceGrainsAtRandomPositions(this.leakingRicesackA, 2);
+            this.engine.world.gravity.y = 1.5;
+            this.dropRiceGrainsAtRandomPositions(this.leakingRicesackA, 1.25);
         }
     }
 
@@ -332,15 +332,15 @@ class Game {
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'basket') {
                     const riceGrains = collision.bodyA;
                     World.remove(this.engine.world, riceGrains);
-                    this.riceGrainsSaved += 10;
-                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 400) * 100);
+                    this.riceGrainsSaved += 15;
+                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
                 if (collision.bodyB.label === 'rice grains' && collision.bodyA.label === 'basket') {
                     const riceGrains = collision.bodyB;
                     World.remove(this.engine.world, riceGrains);
-                    this.riceGrainsSaved += 10;
-                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 400) * 100);
+                    this.riceGrainsSaved += 15;
+                    this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
 
@@ -504,9 +504,13 @@ class Game {
             // on click of modal, restart round
         }
 
-        if (this.riceGrainsSaved === 200) {
+        if (this.riceGrainsSaved >= 200) {
             // show modal for enough rice caught
             // on click of modal, start new level 
+            console.log('show start new level modal');
+            this.pauseGame();
+            // show well done, moving to next level.
+            // pass function to modal for execution after clicking the modal.
         }
 
 
