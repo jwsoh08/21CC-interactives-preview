@@ -11,7 +11,7 @@ class ProgressBar {
         var progressLevel = document.getElementById("progressLevel");
         // to offset the icon marker on the progress bar a little bit to the right
         // so that it sits within the PB at the beginning.
-        progressLevel.style.width = level + 2 + "%";
+        progressLevel.style.width = level + "%";
 
         // doStarJump(score);
         if (level < 100) {

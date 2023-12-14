@@ -7,7 +7,7 @@
     height: 4.5vh;
     min-height: 25px;
     display: flex;
-    gap: 1vw;
+    gap: min(2.5vw, 20px);
 }
 
 .progressBarContainer {
@@ -26,6 +26,11 @@
     box-shadow: 4px 4px 1px #F47D61;
 }
 
+/* Todo: check if we could use a container query to query the width of the progress level 
+ * I want to reduce the value applied to the 'right' property on the svg logo on the progress
+ * bar to prevent an "overflow" on the right as it approaches 100%..
+ */
+
 #progressLevel {
     height: 100%;
     border-radius: 3vw 0 0 3vw;
@@ -33,10 +38,11 @@
     margin-bottom: 40px;
     background: #578FFE;
     position: relative;
+    max-width: 100%;
 }
 
 #progressLevel>svg {
-    min-width: 32px;
+    min-width: fit-content;
     width: auto;
     height: 115%;
     position: absolute;
@@ -48,8 +54,15 @@
 
     /* Tablets */
     #progressLevel>svg {
-        min-width: 45px;
-        right: -32px;
+        right: -28px;
+    }
+}
+
+@media (min-width: 68.75rem) {
+
+    /* Laptop */
+    #progressLevel>svg {
+        right: -42px;
     }
 }
 
