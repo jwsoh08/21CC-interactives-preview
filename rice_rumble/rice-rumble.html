@@ -119,6 +119,14 @@
             left: 0;
         }
 
+        .info-box.praise {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: fit-content;
+        }
+
 
         .game,
         #game-canvas {
@@ -201,7 +209,12 @@
         <div class="game not-displayed">
             <canvas id="game-canvas"></canvas>
         </div>
+
         <div class="overlay not-displayed"></div>
+        <div class="info-box praise not-displayed">
+            <img src="./images/praise-message.svg"
+                alt="Great job! You have managed to save more than 200grams of rice.">
+        </div>
         <div class="ending">
             <section class="results congratulate info-box not-displayed">
                 <!-- src left empty on purpose, to be dynamically populated later -->

@@ -2,6 +2,7 @@ class Modal {
     constructor() {
         this.notEnoughRice = document.querySelector('.results.encourage');
         this.overlay = document.querySelector('.overlay');
+        this.praise = document.querySelector('.info-box.praise');
     }
 
     hideOverlay() {
@@ -23,6 +24,11 @@ class Modal {
             this.notEnoughRice.classList.add('not-displayed');
             this.hideOverlay();
         });
+    }
+
+    showPraise() {
+        this.praise.classList.remove('not-displayed');
+        this.overlay.classList.remove('not-displayed');
     }
 }
 

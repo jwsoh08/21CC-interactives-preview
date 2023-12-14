@@ -505,10 +505,9 @@ class Game {
         }
 
         if (this.riceGrainsSaved >= 200) {
-            // show modal for enough rice caught
-            // on click of modal, start new level 
-            console.log('show start new level modal');
             this.pauseGame();
+            modal.showPraise();
+            // on click of modal, start new level 
             // show well done, moving to next level.
             // pass function to modal for execution after clicking the modal.
         }
