@@ -430,7 +430,7 @@ class Game {
 
     createLeakingRiceGrains(sack) {
         const xPos = sack.position.x;
-        const yPos = sack.position.y + 20;
+        const yPos = sack.position.y + 25;
         // the rice grains should be rotated by one of the 3 possible angles upon "spawning"
         const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
 
@@ -456,7 +456,7 @@ class Game {
 
     createFallingMouse(sack) {
         const xPos = sack.position.x;
-        const yPos = sack.position.y + 20;
+        const yPos = sack.position.y + 25;
         // try to see if i can make the mouse look like it's struggling while falling using rotation
         const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
 
