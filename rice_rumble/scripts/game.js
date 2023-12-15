@@ -107,8 +107,8 @@ class Game {
                 item = this.createLeakingRiceGrains(riceSack);
             }
 
-            if (this.currentLevel >= 2) {
-                const probabilityOfMouseFalling = 0.25;
+            if (this.currentLevel === 2 || this.currentLevel === 3) {
+                const probabilityOfMouseFalling = this.currentLevel === 2 ? 0.25 : 0.5;
                 const random = Math.random(); // some number between 0, 1
 
                 if (random <= probabilityOfMouseFalling) {
@@ -155,6 +155,11 @@ class Game {
         if (level === 2) {
             this.engine.world.gravity.y = 2;
             this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
+        }
+
+        if (level === 3) {
+            this.engine.world.gravity.y = 3;
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
         }
     }
 
@@ -515,7 +520,8 @@ class Game {
             modal.executeFuncAfterHidingOppsRatCaught(() => this.startLevel(this.currentLevel));
         }
 
-        if (this.riceGrainsSaved >= 200) {
+        if ((this.currentLevelTimer !== 30) &&
+            (this.riceGrainsSaved >= 200)) {
             this.pauseGame();
             modal.showPraise();
             modal.executeFuncAfterHidingPraise(() => this.startLevel(++this.currentLevel));

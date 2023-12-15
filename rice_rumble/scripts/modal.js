@@ -33,11 +33,15 @@ class Modal {
     }
 
     executeFuncAfterHidingPraise(func) {
-        this.praise.addEventListener('click', () => {
+
+        const temp = () => {
             func();
             this.praise.classList.add('not-displayed');
             this.hideOverlay();
-        });
+            this.praise.removeEventListener('click', temp);
+        }
+
+        this.praise.addEventListener('click', temp);
     }
 
     showOppsRatCaught() {
@@ -46,11 +50,15 @@ class Modal {
     }
 
     executeFuncAfterHidingOppsRatCaught(func) {
-        this.oopsRatcaught.addEventListener('click', () => {
+
+        const temp = () => {
             func();
             this.oopsRatcaught.classList.add('not-displayed');
             this.hideOverlay();
-        });
+            this.oopsRatcaught.removeEventListener('click', temp);
+        }
+
+        this.oopsRatcaught.addEventListener('click', temp);
     }
 }
 
