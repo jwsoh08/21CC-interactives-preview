@@ -184,50 +184,6 @@ class Game {
         Timer.updateTimer(`00:${seconds}`);
     }
 
-    // function not used
-    startFallingRice() {
-        const dropItemsAtRandomPositions = (riceSack) => {
-            this.repositionLeakingRicesack(riceSack);
-            this.unhideRicesack(riceSack);
-
-            const riceGrains = this.createLeakingRiceGrains(riceSack);
-            World.add(this.engine.world, riceGrains);
-        }
-
-        const temp = async () => {
-            dropItemsAtRandomPositions(this.leakingRicesackA);
-
-            if (this.currentLevelTimer <= 25 && this.leakingRicesackB.render.opacity === 0) {
-                /*
-                 * In case we wish to increase the speed of the falling rice grains, we can use this setting here
-                 * Example:
-                 * this.engine.world.gravity.y = 2.5;
-                 */
-
-                /* 
-                 * In case we want to change the interval time of the leaking rice sack's initial position
-                 * and it's next position over the span of this.currentLevelTimer. (see definition above to find out how long it has been set)
-                 * clearInterval(this.fallingRiceIntervalA);
-                 * Example:
-                 * this.fallingRiceIntervalA = setInterval(temp, 1000);
-                 */
-
-                // start spawn timer for sack B from 2s
-                await this.waitOneSecond();
-                this.unhideRicesack(this.leakingRicesackB);
-                this.fallingRiceIntervalB = setInterval(() => dropItemsAtRandomPositions(this.leakingRicesackB), 2000);
-            }
-
-            if (this.currentLevelTimer <= 15 && this.leakingRicesackC.render.opacity === 0) {
-                this.engine.world.gravity.y = 2.5;
-                this.unhideRicesack(this.leakingRicesackC);
-                this.fallingRiceIntervalC = setInterval(() => dropItemsAtRandomPositions(this.leakingRicesackC), 2000);
-            }
-        };
-
-        this.fallingRiceIntervalA = setInterval(temp, 2000);
-    }
-
     unhideRicesack(sack) {
         sack.render.opacity = 1;
     }
