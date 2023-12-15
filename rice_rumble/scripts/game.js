@@ -108,7 +108,7 @@ class Game {
             }
 
             if (this.currentLevel >= 2) {
-                const probabilityOfMouseFalling = 0.2;
+                const probabilityOfMouseFalling = 0.25;
                 const random = Math.random(); // some number between 0, 1
 
                 if (random <= probabilityOfMouseFalling) {
@@ -136,6 +136,7 @@ class Game {
         this.resetTimer(30);
         this.riceGrainsSaved = 0;
         this.isPaused = false;
+        this.isMouseCaught = false;
         this.stopAllFallingRicesacksItems();
         this.removeAllFallenItemsFromScreen();
         this.progressBar.reset();
@@ -305,6 +306,15 @@ class Game {
             const pairs = event.pairs;
 
             pairs.forEach(async (collision) => {
+                // if falling rat hit the basket on first collision, restart round
+                // logic for restarting round found in updateGame() method.
+                if (collision.bodyA.label === 'rat' && collision.bodyB.label === 'basket') {
+                    this.isMouseCaught = true;
+                }
+                if (collision.bodyB.label === 'rat' && collision.bodyA.label === 'basket') {
+                    this.isMouseCaught = true;
+                }
+
                 // If falling rice grain hit the basket on first collision, add points
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'basket') {
                     const riceGrains = collision.bodyA;
@@ -500,8 +510,9 @@ class Game {
         }
 
         if (this.isMouseCaught) {
-            // show modal for not mouse caught
-            // on click of modal, restart round
+            this.pauseGame();
+            modal.showOppsRatCaught();
+            modal.executeFuncAfterHidingOppsRatCaught(() => this.startLevel(this.currentLevel));
         }
 
         if (this.riceGrainsSaved >= 200) {

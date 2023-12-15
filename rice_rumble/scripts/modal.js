@@ -3,6 +3,7 @@ class Modal {
         this.notEnoughRice = document.querySelector('.results.encourage');
         this.overlay = document.querySelector('.overlay');
         this.praise = document.querySelector('.info-box.praise');
+        this.oopsRatcaught = document.querySelector('.info-box.oops-rat-caught');
     }
 
     hideOverlay() {
@@ -35,6 +36,19 @@ class Modal {
         this.praise.addEventListener('click', () => {
             func();
             this.praise.classList.add('not-displayed');
+            this.hideOverlay();
+        });
+    }
+
+    showOppsRatCaught() {
+        this.oopsRatcaught.classList.remove('not-displayed');
+        this.overlay.classList.remove('not-displayed');
+    }
+
+    executeFuncAfterHidingOppsRatCaught(func) {
+        this.oopsRatcaught.addEventListener('click', () => {
+            func();
+            this.oopsRatcaught.classList.add('not-displayed');
             this.hideOverlay();
         });
     }
