@@ -97,20 +97,35 @@ class Game {
         clearInterval(this.fallingRiceIntervalC);
     }
 
-    dropRiceGrainsAtRandomPositions(riceSack, intervalInSeconds) {
+    dropItemsAtRandomPositions(riceSack, intervalInSeconds) {
         this.fallingRiceIntervalA = setInterval(() => {
             this.repositionLeakingRicesack(riceSack);
             this.unhideRicesack(riceSack);
 
-            const riceGrains = this.createLeakingRiceGrains(riceSack);
-            World.add(this.engine.world, riceGrains);
+            let item;
+            if (this.currentLevel === 1) {
+                item = this.createLeakingRiceGrains(riceSack);
+            }
+
+            if (this.currentLevel >= 2) {
+                const probabilityOfMouseFalling = 0.2;
+                const random = Math.random(); // some number between 0, 1
+
+                if (random <= probabilityOfMouseFalling) {
+                    item = this.createFallingMouse(riceSack);
+                } else {
+                    item = this.createLeakingRiceGrains(riceSack);
+                }
+            }
+
+            World.add(this.engine.world, item);
         }, intervalInSeconds * 1000);
     }
 
-    removeAllRiceGrainsFromScreen() {
+    removeAllFallenItemsFromScreen() {
         const bodies = Composite.allBodies(this.engine.world);
         bodies.forEach((body) => {
-            if (body.label === "rice grains") {
+            if (body.label === "rice grains" || body.label === "rat") {
                 World.remove(this.engine.world, body);
             }
         })
@@ -122,7 +137,7 @@ class Game {
         this.riceGrainsSaved = 0;
         this.isPaused = false;
         this.stopAllFallingRicesacksItems();
-        this.removeAllRiceGrainsFromScreen();
+        this.removeAllFallenItemsFromScreen();
         this.progressBar.reset();
     }
 
@@ -133,7 +148,12 @@ class Game {
         // place the game logic required for each level if each if block
         if (level === 1) {
             this.engine.world.gravity.y = 1.5;
-            this.dropRiceGrainsAtRandomPositions(this.leakingRicesackA, 1.25);
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
+        }
+
+        if (level === 2) {
+            this.engine.world.gravity.y = 2;
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
         }
     }
 
@@ -164,8 +184,9 @@ class Game {
         Timer.updateTimer(`00:${seconds}`);
     }
 
+    // function not used
     startFallingRice() {
-        const dropRiceGrainsAtRandomPositions = (riceSack) => {
+        const dropItemsAtRandomPositions = (riceSack) => {
             this.repositionLeakingRicesack(riceSack);
             this.unhideRicesack(riceSack);
 
@@ -174,7 +195,7 @@ class Game {
         }
 
         const temp = async () => {
-            dropRiceGrainsAtRandomPositions(this.leakingRicesackA);
+            dropItemsAtRandomPositions(this.leakingRicesackA);
 
             if (this.currentLevelTimer <= 25 && this.leakingRicesackB.render.opacity === 0) {
                 /*
@@ -194,13 +215,13 @@ class Game {
                 // start spawn timer for sack B from 2s
                 await this.waitOneSecond();
                 this.unhideRicesack(this.leakingRicesackB);
-                this.fallingRiceIntervalB = setInterval(() => dropRiceGrainsAtRandomPositions(this.leakingRicesackB), 2000);
+                this.fallingRiceIntervalB = setInterval(() => dropItemsAtRandomPositions(this.leakingRicesackB), 2000);
             }
 
             if (this.currentLevelTimer <= 15 && this.leakingRicesackC.render.opacity === 0) {
                 this.engine.world.gravity.y = 2.5;
                 this.unhideRicesack(this.leakingRicesackC);
-                this.fallingRiceIntervalC = setInterval(() => dropRiceGrainsAtRandomPositions(this.leakingRicesackC), 2000);
+                this.fallingRiceIntervalC = setInterval(() => dropItemsAtRandomPositions(this.leakingRicesackC), 2000);
             }
         };
 
@@ -477,6 +498,29 @@ class Game {
         });
     }
 
+    createFallingMouse(sack) {
+        const xPos = sack.position.x;
+        const yPos = sack.position.y + 20;
+        // try to see if i can make the mouse look like it's struggling while falling using rotation
+        const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
+
+        return Bodies.rectangle(xPos, yPos, 15, 15, {
+            angle: this.getRandomElement(possibleAnglesInRadians),
+            render: {
+                sprite: {
+                    texture: './images/rat.svg'
+                }
+            },
+            label: "rat",
+            frictionAir: 0.4,
+            friction: 0.1,
+            collisionFilter: {
+                group: 2,
+                mask: 0x0002
+            }
+        });
+    }
+
     createLeakingRicesack(type) {
         return Bodies.rectangle(this.getRandomXPosition(50, 750), 110, 75, 75, {
             isStatic: true,
@@ -507,9 +551,7 @@ class Game {
         if (this.riceGrainsSaved >= 200) {
             this.pauseGame();
             modal.showPraise();
-            // on click of modal, start new level 
-            // show well done, moving to next level.
-            // pass function to modal for execution after clicking the modal.
+            modal.executeFuncAfterHidingPraise(() => this.startLevel(++this.currentLevel));
         }
 
 

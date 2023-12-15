@@ -30,6 +30,14 @@ class Modal {
         this.praise.classList.remove('not-displayed');
         this.overlay.classList.remove('not-displayed');
     }
+
+    executeFuncAfterHidingPraise(func) {
+        this.praise.addEventListener('click', () => {
+            func();
+            this.praise.classList.add('not-displayed');
+            this.hideOverlay();
+        });
+    }
 }
 
 
