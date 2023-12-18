@@ -382,16 +382,21 @@ class Game {
                     return;
                 }
 
-                if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'lower ground') {
-                    const riceGrains = collision.bodyA;
-                    this.disposeRiceGrains(riceGrains);
-                }
-                if (collision.bodyB.label === 'rice grains' && collision.bodyA.label === 'lower ground') {
-                    const riceGrains = collision.bodyB;
-                    this.disposeRiceGrains(riceGrains);
-                }
+                this.disposeBodyUponCollisionWithGround(collision, 'rat');
+                this.disposeBodyUponCollisionWithGround(collision, 'rice grains');
             });
         });
+    }
+
+    disposeBodyUponCollisionWithGround(collision, bodyLabel) {
+        if (collision.bodyA.label === bodyLabel && collision.bodyB.label === 'lower ground') {
+            const rat = collision.bodyA;
+            this.disposeBody(rat);
+        }
+        if (collision.bodyB.label === bodyLabel && collision.bodyA.label === 'lower ground') {
+            const rat = collision.bodyB;
+            this.disposeBody(rat);
+        }
     }
 
     createUserInteractionHandlers() {
@@ -451,15 +456,15 @@ class Game {
 
     }
 
-    async disposeRiceGrains(grains) {
-        this.fadeOutRiceGrains(grains);
+    async disposeBody(body) {
+        this.fadeOutBody(body);
         await this.waitOneSecond();
-        World.remove(this.engine.world, grains);
+        World.remove(this.engine.world, body);
         // no longer needed, to free up memory
         // grains = null;
     }
 
-    fadeOutRiceGrains(grains) {
+    fadeOutBody(body) {
         const duration = 1000; // Duration of the fade out effect in milliseconds
         const startTime = Date.now();
 
@@ -472,7 +477,7 @@ class Game {
             const opacity = 1 - Math.min(elapsed / duration, 1);
 
             // Update the box's opacity
-            grains.render.opacity = opacity;
+            body.render.opacity = opacity;
 
             // Continue updating until the duration is reached
             if (elapsed < duration) {
