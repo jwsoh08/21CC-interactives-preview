@@ -67,6 +67,26 @@ class Game {
         return Number((Math.random() * (maxX - minX) + minX).toFixed(0));
     }
 
+    getRandomValueFromTwoRanges(min1, max1, min2, max2) {
+        const range1 = max1 - min1 + 1;
+        const range2 = max2 - min2 + 1;
+
+        // Combine the two ranges into a single range
+        const totalRange = range1 + range2;
+
+        // Generate a random value from the combined range
+        const randomValue = Math.floor(Math.random() * totalRange);
+
+        // Determine which range the random value belongs to
+        if (randomValue < range1) {
+            // The random value belongs to the first range
+            return Math.floor(Math.random() * (max1 - min1 + 1) + min1);
+        } else {
+            // The random value belongs to the second range
+            return Math.floor(Math.random() * (max2 - min2 + 1) + min2);
+        }
+    }
+
     getRandomElement(arr) {
         if (arr.length === 0) {
             // Handle empty array case
@@ -122,6 +142,56 @@ class Game {
         }, intervalInSeconds * 1000);
     }
 
+    dropItemsAtRandomPositionsNew(riceSack, intervalInSeconds) {
+        this.fallingRiceIntervalA = setInterval(() => {
+
+            if (this.currentLevel === 1) {
+                this.repositionLeakingRicesack(riceSack);
+                this.unhideRicesack(riceSack);
+
+                let item;
+                item = this.createLeakingRiceGrains(riceSack);
+                World.add(this.engine.world, item);
+                return;
+            }
+
+            if (this.currentLevel === 2 || this.currentLevel === 3) {
+                let ricePosX;
+
+                if (this.basket.position.x >= 400) {
+                    ricePosX = this.getRandomXPosition(0, 400);
+                } else {
+                    ricePosX = this.getRandomXPosition(400, 750);
+                }
+
+                const NUM_MICE_PER_INTERVAL = 1;
+                // Math.floor(Math.random() * (maxX - minX + 1) + minX)
+                let riceIndex = Math.floor(Math.random() * (NUM_MICE_PER_INTERVAL - 0 + 1) + 0);
+                let count = NUM_MICE_PER_INTERVAL;
+                let item;
+
+                while (count >= 0) {
+                    if (count === riceIndex) {
+                        // drop rice
+                        this.repositionLeakingRicesackNew(riceSack, { x: ricePosX, y: 110 });
+                        this.unhideRicesack(riceSack);
+                        item = this.createLeakingRiceGrains(riceSack);
+
+                    } else {
+                        // this offset ensures that the falling mouse does not overlap with the rice
+                        let offset = this.getRandomValueFromTwoRanges(riceIndex - 25, riceIndex - 5, riceIndex + 5, riceIndex + 25);
+                        offset = ricePosX + offset <= 800 ? offset : -offset;
+                        item = this.createFallingMouseNew({ x: ricePosX + offset, y: 110 });
+                    }
+                    World.add(this.engine.world, item);
+
+                    count--;
+                }
+            }
+
+        }, intervalInSeconds * 1000);
+    }
+
     removeAllFallenItemsFromScreen() {
         const bodies = Composite.allBodies(this.engine.world);
         bodies.forEach((body) => {
@@ -154,12 +224,12 @@ class Game {
 
         if (level === 2) {
             this.engine.world.gravity.y = 2;
-            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
+            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 2);
         }
 
         if (level === 3) {
             this.engine.world.gravity.y = 3;
-            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
+            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1);
         }
     }
 
@@ -324,14 +394,24 @@ class Game {
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'basket') {
                     const riceGrains = collision.bodyA;
                     World.remove(this.engine.world, riceGrains);
-                    this.riceGrainsSaved += 15;
+                    if (this.currentLevel === 1) {
+                        this.riceGrainsSaved += 15;
+                    }
+                    if (this.currentLevel === 2 || this.currentLevel === 3) {
+                        this.riceGrainsSaved += 25;
+                    }
                     this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
                 if (collision.bodyB.label === 'rice grains' && collision.bodyA.label === 'basket') {
                     const riceGrains = collision.bodyB;
                     World.remove(this.engine.world, riceGrains);
-                    this.riceGrainsSaved += 15;
+                    if (this.currentLevel === 1) {
+                        this.riceGrainsSaved += 15;
+                    }
+                    if (this.currentLevel === 2 || this.currentLevel === 3) {
+                        this.riceGrainsSaved += 25;
+                    }
                     this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
@@ -443,6 +523,10 @@ class Game {
         Body.setPosition(sack, { x: newRandomX, y: 110 });
     }
 
+    repositionLeakingRicesackNew(sack, positionVector) {
+        Body.setPosition(sack, { x: positionVector.x, y: positionVector.y });
+    }
+
     createLeakingRiceGrains(sack) {
         const xPos = sack.position.x;
         const yPos = sack.position.y + 25;
@@ -472,6 +556,30 @@ class Game {
     createFallingMouse(sack) {
         const xPos = sack.position.x;
         const yPos = sack.position.y + 25;
+        // try to see if i can make the mouse look like it's struggling while falling using rotation
+        const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
+
+        return Bodies.rectangle(xPos, yPos, 15, 15, {
+            angle: this.getRandomElement(possibleAnglesInRadians),
+            render: {
+                sprite: {
+                    texture: './images/rat.svg'
+                }
+            },
+            label: "rat",
+            frictionAir: 0.4,
+            friction: 0.1,
+            collisionFilter: {
+                group: 2,
+                mask: 0x0002
+            }
+        });
+    }
+
+    createFallingMouseNew(positionVector) {
+
+        const xPos = positionVector.x;
+        const yPos = positionVector.y;
         // try to see if i can make the mouse look like it's struggling while falling using rotation
         const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
 
