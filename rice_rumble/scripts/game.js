@@ -179,8 +179,9 @@ class Game {
 
                     } else {
                         // this offset ensures that the falling mouse does not overlap with the rice
-                        let offset = this.getRandomValueFromTwoRanges(riceIndex - 25, riceIndex - 5, riceIndex + 5, riceIndex + 25);
+                        let offset = this.getRandomValueFromTwoRanges(riceIndex - 75, riceIndex - 50, riceIndex + 50, riceIndex + 75);
                         offset = ricePosX + offset <= 800 ? offset : -offset;
+
                         item = this.createFallingMouseNew({ x: ricePosX + offset, y: 110 });
                     }
                     World.add(this.engine.world, item);
@@ -223,8 +224,8 @@ class Game {
         }
 
         if (level === 2) {
-            this.engine.world.gravity.y = 2;
-            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 2);
+            this.engine.world.gravity.y = 2.5;
+            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1);
         }
 
         if (level === 3) {
