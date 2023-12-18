@@ -119,31 +119,6 @@ class Game {
 
     dropItemsAtRandomPositions(riceSack, intervalInSeconds) {
         this.fallingRiceIntervalA = setInterval(() => {
-            this.repositionLeakingRicesack(riceSack);
-            this.unhideRicesack(riceSack);
-
-            let item;
-            if (this.currentLevel === 1) {
-                item = this.createLeakingRiceGrains(riceSack);
-            }
-
-            if (this.currentLevel === 2 || this.currentLevel === 3) {
-                const probabilityOfMouseFalling = this.currentLevel === 2 ? 0.25 : 0.5;
-                const random = Math.random(); // some number between 0, 1
-
-                if (random <= probabilityOfMouseFalling) {
-                    item = this.createFallingMouse(riceSack);
-                } else {
-                    item = this.createLeakingRiceGrains(riceSack);
-                }
-            }
-
-            World.add(this.engine.world, item);
-        }, intervalInSeconds * 1000);
-    }
-
-    dropItemsAtRandomPositionsNew(riceSack, intervalInSeconds) {
-        this.fallingRiceIntervalA = setInterval(() => {
 
             if (this.currentLevel === 1) {
                 this.repositionLeakingRicesack(riceSack);
@@ -220,17 +195,17 @@ class Game {
         // place the game logic required for each level if each if block
         if (level === 1) {
             this.engine.world.gravity.y = 1.5;
-            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1.25);
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
         }
 
         if (level === 2) {
             this.engine.world.gravity.y = 1.75;
-            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1);
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
         }
 
         if (level === 3) {
             this.engine.world.gravity.y = 3;
-            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1);
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
         }
     }
 
