@@ -97,8 +97,8 @@ class Game {
         return arr[randomIndex];
     }
 
-    waitOneSecond() {
-        return new Promise(resolve => setTimeout(() => resolve(), 1000));
+    async waitOneSecond() {
+        return await new Promise(resolve => setTimeout(() => resolve(), 1000));
     }
 
     hideGameContainer() {
@@ -118,14 +118,14 @@ class Game {
     }
 
     dropItemsAtRandomPositions(riceSack, intervalInSeconds) {
-        this.fallingRiceIntervalA = setInterval(() => {
+        this.fallingRiceIntervalA = setInterval(async () => {
 
             if (this.currentLevel === 1) {
-                this.repositionLeakingRicesack(riceSack);
+                const newRandomX = this.getRandomXPosition(50, 750);
+                this.repositionLeakingRicesack(riceSack, { x: newRandomX, y: 110 });
                 this.unhideRicesack(riceSack);
 
-                let item;
-                item = this.createLeakingRiceGrains(riceSack);
+                const item = this.createLeakingRiceGrains(riceSack);
                 World.add(this.engine.world, item);
                 return;
             }
@@ -147,8 +147,7 @@ class Game {
 
                 while (count >= 0) {
                     if (count === riceIndex) {
-                        // drop rice
-                        this.repositionLeakingRicesackNew(riceSack, { x: ricePosX, y: 110 });
+                        this.repositionLeakingRicesack(riceSack, { x: ricePosX, y: 110 });
                         this.unhideRicesack(riceSack);
                         item = this.createLeakingRiceGrains(riceSack);
 
@@ -157,10 +156,10 @@ class Game {
                         let offset = this.getRandomValueFromTwoRanges(riceIndex - 75, riceIndex - 50, riceIndex + 50, riceIndex + 75);
                         offset = ricePosX + offset <= 800 ? offset : -offset;
 
-                        item = this.createFallingMouseNew({ x: ricePosX + offset, y: 110 });
+                        item = this.createFallingMouse({ x: ricePosX + offset, y: 110 });
                     }
-                    World.add(this.engine.world, item);
 
+                    World.add(this.engine.world, item);
                     count--;
                 }
             }
@@ -199,13 +198,13 @@ class Game {
         }
 
         if (level === 2) {
-            this.engine.world.gravity.y = 1.75;
-            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
+            this.engine.world.gravity.y = 2;
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.75);
         }
 
         if (level === 3) {
             this.engine.world.gravity.y = 3;
-            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1);
+            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
         }
     }
 
@@ -489,12 +488,7 @@ class Game {
         updateOpacity();
     }
 
-    repositionLeakingRicesack(sack) {
-        const newRandomX = this.getRandomXPosition(50, 750);
-        Body.setPosition(sack, { x: newRandomX, y: 110 });
-    }
-
-    repositionLeakingRicesackNew(sack, positionVector) {
+    repositionLeakingRicesack(sack, positionVector) {
         Body.setPosition(sack, { x: positionVector.x, y: positionVector.y });
     }
 
@@ -524,30 +518,7 @@ class Game {
         });
     }
 
-    createFallingMouse(sack) {
-        const xPos = sack.position.x;
-        const yPos = sack.position.y + 25;
-        // try to see if i can make the mouse look like it's struggling while falling using rotation
-        const possibleAnglesInRadians = [45 * Math.PI / 180, 190 * Math.PI / 180, 300 * Math.PI / 180];
-
-        return Bodies.rectangle(xPos, yPos, 15, 15, {
-            angle: this.getRandomElement(possibleAnglesInRadians),
-            render: {
-                sprite: {
-                    texture: './images/rat.svg'
-                }
-            },
-            label: "rat",
-            frictionAir: 0.4,
-            friction: 0.1,
-            collisionFilter: {
-                group: 2,
-                mask: 0x0002
-            }
-        });
-    }
-
-    createFallingMouseNew(positionVector) {
+    createFallingMouse(positionVector) {
 
         const xPos = positionVector.x;
         const yPos = positionVector.y;
