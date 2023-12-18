@@ -220,11 +220,11 @@ class Game {
         // place the game logic required for each level if each if block
         if (level === 1) {
             this.engine.world.gravity.y = 1.5;
-            this.dropItemsAtRandomPositions(this.leakingRicesackA, 1.25);
+            this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1.25);
         }
 
         if (level === 2) {
-            this.engine.world.gravity.y = 2.5;
+            this.engine.world.gravity.y = 1.75;
             this.dropItemsAtRandomPositionsNew(this.leakingRicesackA, 1);
         }
 
