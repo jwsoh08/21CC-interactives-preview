@@ -370,24 +370,14 @@ class Game {
                 if (collision.bodyA.label === 'rice grains' && collision.bodyB.label === 'basket') {
                     const riceGrains = collision.bodyA;
                     World.remove(this.engine.world, riceGrains);
-                    if (this.currentLevel === 1) {
-                        this.riceGrainsSaved += 15;
-                    }
-                    if (this.currentLevel === 2 || this.currentLevel === 3) {
-                        this.riceGrainsSaved += 25;
-                    }
+                    this.riceGrainsSaved += 15;
                     this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
                 if (collision.bodyB.label === 'rice grains' && collision.bodyA.label === 'basket') {
                     const riceGrains = collision.bodyB;
                     World.remove(this.engine.world, riceGrains);
-                    if (this.currentLevel === 1) {
-                        this.riceGrainsSaved += 15;
-                    }
-                    if (this.currentLevel === 2 || this.currentLevel === 3) {
-                        this.riceGrainsSaved += 25;
-                    }
+                    this.riceGrainsSaved += 15;
                     this.progressBar.updateProgressBar((this.riceGrainsSaved / 200) * 100);
                     return;
                 }
